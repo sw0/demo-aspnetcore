@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +54,23 @@ namespace WebApiDemo.Controllers
         }
 
         /// <summary>
+        /// get list via complext model by GET, [FromQuery] must be specified.
+        /// </summary>
+        /// <remarks>
+        /// url should be like <![CDATA[api/poem/list?paging.pageSize=2&paging.PageNumber=2]]> with prefix `paging` (name of the parameter of complex type)
+        /// </remarks>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet("list")]
+        public IActionResult List([FromQuery]PagingModel paging)
+        {
+            var items = Items.Skip(paging.PageSize * (paging.PageNumber - 1)).Take(paging.PageSize);
+
+            return Ok(items);
+        }
+
+
+        /// <summary>
         /// get poem by given id
         /// </summary>
         /// <param name="id"></param>
@@ -79,7 +95,7 @@ namespace WebApiDemo.Controllers
         /// <param name="env"></param>
         /// <returns></returns>
         [HttpGet("author/{name:alpha}")]
-        public IActionResult Get(string name, [FromServices]IWebHostEnvironment env)
+        public IActionResult Get(string name, [FromServices] IWebHostEnvironment env)
         {
             var file = System.IO.Path.Combine(env.WebRootPath, $"imgs/{name}.jpg");
             Console.WriteLine(file);
