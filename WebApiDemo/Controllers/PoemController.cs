@@ -22,6 +22,7 @@ namespace WebApiDemo.Controllers
      */
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class PoemController : ControllerBase
     {
         static List<PoemViewModel> Items = new List<PoemViewModel> {
@@ -30,6 +31,21 @@ namespace WebApiDemo.Controllers
                 new PoemViewModel{  PoemId = 3, Title = "池上", Author = "白居易", Content = "小娃撑小艇，偷采白莲回。。。。", CreateDate = DateTime.Now, Decription = ""}
             };
 
+        /// <summary>
+        /// Get pome list with pagination
+        /// </summary>
+        /// <remarks>
+        /// 
+        ///    GET /api/poem
+        ///    [
+        ///      { "poemid":1, "title":"jingyesi", "author":"libai"},
+        ///      { "poemid":2, "title":"zengwanglun", "author":"libai"}
+        ///    ]
+        ///    
+        /// </remarks>
+        /// <param name="pagesize"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns></returns>
         [HttpGet("")]
         public IActionResult Get(int pagesize = 5, int pageNumber = 1)
         {
@@ -38,6 +54,13 @@ namespace WebApiDemo.Controllers
             return Ok(items);
         }
 
+        /// <summary>
+        /// get poem by given id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <response code="200">Returns the newly created item</response>
+        /// <response code="404">If the item is null</response> 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
@@ -49,6 +72,12 @@ namespace WebApiDemo.Controllers
             return Ok(item);
         }
 
+        /// <summary>
+        /// get the author photo by name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="env"></param>
+        /// <returns></returns>
         [HttpGet("author/{name:alpha}")]
         public IActionResult Get(string name, [FromServices]IWebHostEnvironment env)
         {
@@ -57,6 +86,21 @@ namespace WebApiDemo.Controllers
             return PhysicalFile(file, "image/jpeg", $"{name}.jpg");
         }
 
+        /// <summary>
+        /// add a new poem
+        /// </summary>
+        /// <remarks>
+        /// 
+        ///    POST /api/poem
+        ///    {"title":"new title", "author":"author name","content":"this is content"}
+        ///    
+        /// </remarks>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="400">If the item is null</response> 
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PoemViewModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         public IActionResult Post(PoemViewModel data)
         {
@@ -74,12 +118,21 @@ namespace WebApiDemo.Controllers
             return CreatedAtAction(nameof(Post), new { id = newId }, data);
         }
 
+        /// <summary>
+        /// update given poem data
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// <response code="200">update successfully and return latest poem</response>
+        /// <response code="400">If the item is null</response> 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PoemViewModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Put(int id, PoemViewModel data)
         {
             if (data.PoemId != id)
                 return BadRequest();
-
 
             var row = Items.FirstOrDefault(r => r.PoemId == id);
 
@@ -94,9 +147,13 @@ namespace WebApiDemo.Controllers
 
             return Ok(data);
         }
-
+        /// <summary>
+        /// delete the poem by given id
+        /// </summary>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="404">cannot find the item</response> 
         [HttpDelete("{id}")]
-        public IActionResult Put(int id)
+        public IActionResult Delete(int id)
         {
             var row = Items.FirstOrDefault(r => r.PoemId == id);
 
