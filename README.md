@@ -22,6 +22,29 @@ dotnet sln add .\WebApiDemo\WebApiDemo.csproj
  - Put to modify one
  - Delete to remove one
  - api/Poem/author/libai to use `PhysicalFile` to send physical file
+ 
+# Controller, methods and attributes
+## ApiController inherits ControllerBase
+- Using [ApiController] in custom base controller calss
+- `[Route]`, [HttpGet], etc
+- Methods
+  - Ok, NotFound, BadRequest, PhysicalFile, NoContent, Created, CreatedAtAction, etc
+  - TryValidateModel
+- automatically http 400 bad request
+  - disable automatically http 400 bad request: SuppressModelStateInvalidFilter
+## Model binding
+- [FromRoute]
+- [FromBody]
+- [FromQuery]
+- [FromForm]
+- [FromHeader]
+
+## Responses
+- Use IActionResult/ActionResult + ProducesResponseType(statuscode, Type) 
+  Use `ActionResult<T>` + ProducesResponseType(statusCode)
+- `[Produces]`, `[Consumes]`
+- Content negotiation
+-
 
 # Swagger
 - [Swashbuckle.Swagger and ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio)

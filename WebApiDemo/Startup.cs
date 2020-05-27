@@ -27,7 +27,12 @@ namespace WebApiDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddXmlSerializerFormatters() //https://docs.microsoft.com/zh-cn/aspnet/core/web-api/advanced/formatting?view=aspnetcore-3.1
+                .ConfigureApiBehaviorOptions(options => {
+                    //https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-3.1#automatic-http-400-responses
+                    //options.SuppressModelStateInvalidFilter = true;
+                });
 
             services.AddSwaggerGen(c =>
             {

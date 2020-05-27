@@ -9,7 +9,9 @@ using WebApiDemo.Models;
 namespace WebApiDemo.Controllers
 {
     /*
-     * Get list
+     * Get list with pagination
+     *      IActionResult + ProducesResponseType(status code, TYPE) => ActionResult<T> + ProducesResponseType(status code)
+     *      Get list with complex object in query by using [FromQuery]      
      * Get one
      * Post: add
      * Put: modify
@@ -20,8 +22,9 @@ namespace WebApiDemo.Controllers
      * 
      */
     [Route("api/[controller]")]
-    [ApiController]
-    [Produces("application/json")]
+    //[ApiController]  //moved to custom base controller that no need to add to every controller
+    //[Produces(System.Net.Mime.MediaTypeNames.Application.Json)] //or 
+    //[Produces("application/json")]
     public class PoemController : ControllerBase
     {
         static List<PoemViewModel> Items = new List<PoemViewModel> {
@@ -46,7 +49,8 @@ namespace WebApiDemo.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [HttpGet("")]
-        public IActionResult Get(int pagesize = 5, int pageNumber = 1)
+        //public IActionResult Get(int pagesize = 5, int pageNumber = 1)
+        public ActionResult<IEnumerable<PoemViewModel>> Get(int pagesize = 5, int pageNumber = 1)
         {
             var items = Items.Skip(pagesize * (pageNumber - 1)).Take(pagesize);
 
@@ -88,6 +92,19 @@ namespace WebApiDemo.Controllers
             return Ok(item);
         }
 
+        [HttpGet("testxml/{id}")]
+        public IActionResult GetTestXml(int id)
+        {
+            var item = Items.FirstOrDefault(t => id == t.PoemId);
+
+            //if (item == null)
+            //    return NotFound();
+
+            var response = Ok(item);
+
+            return response;
+        }
+
         /// <summary>
         /// get the author photo by name
         /// </summary>
@@ -118,8 +135,64 @@ namespace WebApiDemo.Controllers
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PoemViewModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
+        //[Consumes("application/xml","application/json")]
         public IActionResult Post(PoemViewModel data)
         {
+            if (!ModelState.IsValid)
+            {
+                //[ApiController] 's default model state invalid got suppresssed: SuppressModelStateInvalidFilter
+                //see Startup.cs and https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-3.1#binding-source-parameter-inference
+                //return BadRequest(ModelState); //old version response: SerializableError class
+
+                //after 2.2 (include 2.2)
+                return BadRequest(new ValidationProblemDetails(ModelState)
+                {
+                    Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                    //Instance = 
+                    //todo learn more about ValidationProblemDetails
+                });
+            }
+
+            if (data.PoemId > 0)
+                return BadRequest();
+
+            var newId = 1;
+            if (Items.Count > 0)
+                newId = Items.Max(r => r.PoemId) + 1;
+
+            data.PoemId = newId;
+
+            Items.Add(data);
+
+            return CreatedAtAction(nameof(Post), new { id = newId }, data);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PoemViewModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPost("create")]
+        public IActionResult Post2([FromForm]PoemViewModel data)
+        {
+            if (!ModelState.IsValid)
+            {
+                //[ApiController] 's default model state invalid got suppresssed: SuppressModelStateInvalidFilter
+                //see Startup.cs and https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-3.1#binding-source-parameter-inference
+                //return BadRequest(ModelState); //old version response: SerializableError class
+
+                //after 2.2 (include 2.2)
+                return BadRequest(new ValidationProblemDetails(ModelState)
+                {
+                    Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                    //Instance = 
+                    //todo learn more about ValidationProblemDetails
+                });
+            }
+
             if (data.PoemId > 0)
                 return BadRequest();
 
@@ -147,6 +220,21 @@ namespace WebApiDemo.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Put(int id, PoemViewModel data)
         {
+            if (!ModelState.IsValid)
+            {
+                //[ApiController] 's default model state invalid got suppresssed: SuppressModelStateInvalidFilter
+                //see Startup.cs and https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-3.1#binding-source-parameter-inference
+                //return BadRequest(ModelState); //old version response: SerializableError class
+
+                //after 2.2 (include 2.2)
+                return BadRequest(new ValidationProblemDetails(ModelState)
+                {
+                    Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                    //Instance = 
+                    //todo learn more about ValidationProblemDetails
+                });
+            }
+
             if (data.PoemId != id)
                 return BadRequest();
 
