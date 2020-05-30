@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WebApiDemo.Filters;
+using WebApiDemo.Services;
 
 namespace WebApiDemo
 {
@@ -28,16 +30,31 @@ namespace WebApiDemo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers()
-                .AddXmlSerializerFormatters() //https://docs.microsoft.com/zh-cn/aspnet/core/web-api/advanced/formatting?view=aspnetcore-3.1
-                .ConfigureApiBehaviorOptions(options => {
+                .AddXmlDataContractSerializerFormatters()
+                //.AddXmlSerializerFormatters() //https://docs.microsoft.com/zh-cn/aspnet/core/web-api/advanced/formatting?view=aspnetcore-3.1
+                .ConfigureApiBehaviorOptions(options =>
+                {
                     //https://docs.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-3.1#automatic-http-400-responses
-                    //options.SuppressModelStateInvalidFilter = true;
+                    options.SuppressModelStateInvalidFilter = true;
+                })
+                .AddMvcOptions(options =>
+                {
+                    //
+                    //options.RespectBrowserAcceptHeader = true;
+
+                    options.Filters.Add<ValidateModelActionFilterAttribute>();
+                    options.Filters.Add<ValidateModelAsyncActionFilterAttribute>();
+
+                    options.Filters.Add<AddAuthorHeaderResultAttribute>();
                 });
+
+            services.AddScoped<IAuthorService, AuthorService>();
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo {
-                    Title = "Poem API", 
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Poem API",
                     Version = "v1",
                     Description = "A sample ASPNET Core WebAPI application"
                 });
@@ -53,7 +70,8 @@ namespace WebApiDemo
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c => {
+            app.UseSwaggerUI(c =>
+            {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Poem API V1");
             });
             if (env.IsDevelopment())

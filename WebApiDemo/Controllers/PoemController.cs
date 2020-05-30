@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using WebApiDemo.Filters;
 using WebApiDemo.Models;
 
 namespace WebApiDemo.Controllers
@@ -22,10 +24,11 @@ namespace WebApiDemo.Controllers
      * 
      */
     [Route("api/[controller]")]
+    [AddAuthorHeaderResult]
     //[ApiController]  //moved to custom base controller that no need to add to every controller
     //[Produces(System.Net.Mime.MediaTypeNames.Application.Json)] //or 
     //[Produces("application/json")]
-    public class PoemController : ControllerBase
+    public class PoemController : MyBaseController // ControllerBase
     {
         static List<PoemViewModel> Items = new List<PoemViewModel> {
                 new PoemViewModel{  PoemId = 1, Title = "静夜思", Author = "李白", Content = "床前明月光。。。。", CreateDate = DateTime.Now, Decription = "" },
@@ -49,10 +52,10 @@ namespace WebApiDemo.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [HttpGet("")]
-        //public IActionResult Get(int pagesize = 5, int pageNumber = 1)
-        public ActionResult<IEnumerable<PoemViewModel>> Get(int pagesize = 5, int pageNumber = 1)
+        public IActionResult Get(int pagesize = 5, int pageNumber = 1)
+        //public ActionResult<IEnumerable<PoemViewModel>> Get(int pagesize = 5, int pageNumber = 1)
         {
-            var items = Items.Skip(pagesize * (pageNumber - 1)).Take(pagesize);
+            var items = Items.Skip(pagesize * (pageNumber - 1)).Take(pagesize).ToList();
 
             return Ok(items);
         }
@@ -66,7 +69,7 @@ namespace WebApiDemo.Controllers
         /// <param name="paging"></param>
         /// <returns></returns>
         [HttpGet("list")]
-        public IActionResult List([FromQuery]PagingModel paging)
+        public IActionResult List([FromQuery] PagingModel paging)
         {
             var items = Items.Skip(paging.PageSize * (paging.PageNumber - 1)).Take(paging.PageSize);
 
@@ -176,7 +179,7 @@ namespace WebApiDemo.Controllers
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PoemViewModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("create")]
-        public IActionResult Post2([FromForm]PoemViewModel data)
+        public IActionResult Post2([FromForm] PoemViewModel data)
         {
             if (!ModelState.IsValid)
             {

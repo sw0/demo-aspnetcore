@@ -14,7 +14,7 @@ dotnet new webapi -o WebApiDemo
 dotnet sln add .\WebApiDemo\WebApiDemo.csproj
  ```
 
- # Add PoemController and PoemViewModel
+ ## Add PoemController and PoemViewModel
  With default N Poem Items just initialized in PoemController.
  - Get
  - Get One
@@ -44,7 +44,21 @@ dotnet sln add .\WebApiDemo\WebApiDemo.csproj
   Use `ActionResult<T>` + ProducesResponseType(statusCode)
 - `[Produces]`, `[Consumes]`
 - Content negotiation
--
+  - Header Accept
+  - FormatFilter + RouteData["format"] (json, xml)
+
+ ## FilterAttribute
+ - ActionFilter
+ - ResultFilter
+ - ResourceFilter
+ - AuthorizationFilter
+ - ExceptionFilter
+
+**NOTE**
+- Support DI
+- Short-circuit by set the `xxxContext.Result`
+- Synchronous VS Asynchronous methods
+- Support multiple filters in one class by inherits multiple interfaces
 
 # Swagger
 - [Swashbuckle.Swagger and ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio)
