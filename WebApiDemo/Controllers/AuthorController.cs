@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,10 +17,12 @@ namespace WebApiDemo.Controllers
     [Route("api/[controller]")]
     public class AuthorController : MyBaseController
     {
+        IWebHostEnvironment _env;
         IAuthorService _author;
 
-        public AuthorController(IAuthorService author)
+        public AuthorController(IWebHostEnvironment env, IAuthorService author)
         {
+            _env = env;
             _author = author;
         }
 
@@ -33,6 +38,35 @@ namespace WebApiDemo.Controllers
         public IEnumerable<AuthorViewModel> GetObjects()
         {
             return _author.GetAll();
+        }
+
+
+        [HttpPost("upload")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> Post(AuthorPhotoCreateViewModel authorPhoto)
+        {
+            if(authorPhoto?.Data == null)
+            {
+                return BadRequest("no photo data provided");
+            }
+
+            var filename = Path.GetRandomFileName().Replace(".", "");
+
+            var file = Path.Combine(_env.WebRootPath, $"imgs/{authorPhoto.AuthorId}-{filename}{authorPhoto.Extension}");
+
+            if (System.IO.File.Exists(file))
+            {
+                return Conflict("file already existed");
+            }
+
+            await System.IO.File.WriteAllBytesAsync(file, authorPhoto.Data);
+
+            return Ok(new
+            {
+                FileName = file,
+            });
         }
 
         /// <summary>
