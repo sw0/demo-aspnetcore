@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,9 +35,14 @@ namespace WebApiDemo.Controllers
             return _author.GetAll();
         }
 
-
+        /// <summary>
+        /// Always failed in validation in custom filter: <see cref="AlwaysInvalidValidationAttribute"/>
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("custom")]
         [AlwaysInvalidValidation]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public IActionResult GetCustomValidation()
         {
             //ACTUALLY, WILL NOT HIT HERE. 
@@ -44,7 +50,8 @@ namespace WebApiDemo.Controllers
 
             if (ModelState.IsValid)
             {
-                return BadRequest(new ValidationProblemDetails(ModelState) { 
+                return BadRequest(new ValidationProblemDetails(ModelState)
+                {
                     Title = "Model validated in custom ActionFilter",
                 });
             }

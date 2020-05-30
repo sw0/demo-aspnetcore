@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace WebApiDemo.Filters
 {
+    /// <summary>
+    /// Sample Filter to simulate common model validation by global filter
+    /// </summary>
     public class AlwaysInvalidValidationAttribute : Attribute, IAsyncActionFilter
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
