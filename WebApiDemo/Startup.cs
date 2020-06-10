@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WebApiDemo.Filters;
+using WebApiDemo.Middlewares;
 using WebApiDemo.Services;
 
 namespace WebApiDemo
@@ -69,6 +70,8 @@ namespace WebApiDemo
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseAuthorMiddleware();
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
