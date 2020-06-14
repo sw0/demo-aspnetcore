@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "notes", "notes", "{D1DC6D36
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiDemo.Tests", "WebApiDemo.Tests\WebApiDemo.Tests.csproj", "{4E6B68C4-C648-4B3B-9E45-AA19B519301A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,18 @@ Global
 		{0F5D2EC2-3032-44CA-8F9C-CB63A81C7EF7}.Release|x64.Build.0 = Release|Any CPU
 		{0F5D2EC2-3032-44CA-8F9C-CB63A81C7EF7}.Release|x86.ActiveCfg = Release|Any CPU
 		{0F5D2EC2-3032-44CA-8F9C-CB63A81C7EF7}.Release|x86.Build.0 = Release|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Debug|x64.Build.0 = Debug|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Debug|x86.Build.0 = Debug|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Release|x64.ActiveCfg = Release|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Release|x64.Build.0 = Release|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Release|x86.ActiveCfg = Release|Any CPU
+		{4E6B68C4-C648-4B3B-9E45-AA19B519301A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
