@@ -3,10 +3,22 @@ using EasyNetQ;
 using Messages;
 using QueueTester.Core;
 
-Console.WriteLine("Hello, this is Publiser.");
 Console.Title = "Publisher";
 
-using (var bus = RabbitHutch.CreateBus(AppConsts.RabbitConnection))
+Console.WriteLine("Hello, this is Publiser. Please input vhost:1 or 2");
+Console.WriteLine("In this demo, we requires two vhosts, and using RPC calls running on multiple consoles, without affecting each other.");
+var vhost = Console.ReadLine();
+var connectionString = AppConsts.RabbitConnection;
+
+if (vhost == "2")
+{
+    Console.Title = "Publisher[2]";
+    connectionString = AppConsts.RabbitConnection2;
+}
+
+Console.WriteLine("Now we're using " + connectionString + Environment.NewLine);
+
+using (var bus = RabbitHutch.CreateBus(connectionString))
 {
     //test publisher
     var input = "";
@@ -19,7 +31,7 @@ using (var bus = RabbitHutch.CreateBus(AppConsts.RabbitConnection))
             {
                 var request = new TextMessage()
                 {
-                    Text = $"at-{DateTime.Now:mm:ss} [RPC Request]"
+                    Text = $"at-{DateTime.Now:mm:ss} [RPC Request({vhost})]"
                 };
                 Console.WriteLine($"[{DateTime.Now:mm:ss}] Sent RPC request: {request.Text}");
 
@@ -32,15 +44,15 @@ using (var bus = RabbitHutch.CreateBus(AppConsts.RabbitConnection))
                         ;
                     });
 
-                Console.WriteLine($"[{DateTime.Now:mm:ss}] Got RPC response: {resposne.Response}");
+                Console.WriteLine($"[{DateTime.Now:mm:ss}] Got RPC response: {resposne.Response}({vhost})");
             }
             catch (TaskCanceledException tce)
             {
-                Console.WriteLine($"[{DateTime.Now:mm:ss}] Task Cancelled. Timeout. {tce.Message}");
+                Console.WriteLine($"[{DateTime.Now:mm:ss}] Task Cancelled. Timeout. {tce.Message}({vhost})");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[{DateTime.Now:mm:ss}] Exception occurred: {ex.Message}");
+                Console.WriteLine($"[{DateTime.Now:mm:ss}] Exception occurred: {ex.Message}({vhost})");
             }
         }
         else
@@ -49,7 +61,7 @@ using (var bus = RabbitHutch.CreateBus(AppConsts.RabbitConnection))
             {
                 Text = input ?? "empty string"
             });
-            Console.WriteLine($"[{DateTime.Now:mm:ss}] Publish to queue: {input}");
+            Console.WriteLine($"[{DateTime.Now:mm:ss}] Publish to queue: {input}({vhost})");
         }
 
         Console.WriteLine("Enter a message. Or 'rpc' to make RPC call, 'q' to quit.");

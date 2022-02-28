@@ -7,10 +7,19 @@ using RabbitMQ.Client.Events;
 using System.Text;
 
 Console.Title = "Consumer";
-Console.WriteLine("Hello, this is Consumer.");
+Console.WriteLine("Hello, this is Consumer. Please input vhost:1 or 2");
+Console.WriteLine("In this demo, we requires two vhosts, and using RPC calls running on multiple consoles, without affecting each other.");
+var vhost = Console.ReadLine();
+var connectionString = AppConsts.RabbitConnection;
+
+if (vhost == "2")
+{
+    Console.Title = "Consumer[2]";
+    connectionString = AppConsts.RabbitConnection2;
+}
 
 var factory = new ConnectionFactory();
-factory.Uri = new Uri(AppConsts.RabbitConnection);
+factory.Uri = new Uri(connectionString);
 
 var connection = factory.CreateConnection();
 var channel = connection.CreateModel();
@@ -64,7 +73,7 @@ consumer.Received += (sender, args) =>
 };
 channel.BasicConsume(queueName, true, consumer);
 
-Console.WriteLine($"Press any key to exit...");
+Console.WriteLine($"Consumer is running and wait RPC calls...\r\nPress any key to exit...");
 Console.ReadKey();
 channel.Close();
 connection.Close();
