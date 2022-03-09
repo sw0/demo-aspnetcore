@@ -9,9 +9,9 @@ namespace WebApiDemo.Middlewares
 {
     public static class MiddlewareExtensions
     {
-        public static IApplicationBuilder UseAuthorMiddleware(this IApplicationBuilder applicationBuilder)
+        public static IApplicationBuilder UseAuthorHeaderMiddleware(this IApplicationBuilder applicationBuilder)
         {
-            applicationBuilder.UseMiddleware<AuthorMiddleware>();
+            applicationBuilder.UseMiddleware<AuthorHeaderMiddleware>();
 
             return applicationBuilder;
         }

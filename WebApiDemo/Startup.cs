@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +52,16 @@ namespace WebApiDemo
 
             services.AddScoped<IAuthorService, AuthorService>();
 
+            #region data protection
+            services.AddDataProtection()
+            // point at a specific folder and use DPAPI to encrypt keys
+            //.PersistKeysToFileSystem(new DirectoryInfo(@"c:\temp-keys"))
+            .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
+            #endregion
+
+
+            #region swagger
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -65,12 +76,14 @@ namespace WebApiDemo
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseAuthorMiddleware();
+            //custom header
+            app.UseAuthorHeaderMiddleware();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
