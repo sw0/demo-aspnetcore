@@ -18,6 +18,12 @@ if (vhost == "2")
     connectionString = AppConsts.RabbitConnection2;
 }
 
+//var hub = RabbitHutch.CreateBus(connectionString);
+//hub.PubSub.Subscribe<TextMessage>("", msg => Console.WriteLine(msg.Text));
+
+//Console.ReadLine();
+//return;
+
 var factory = new ConnectionFactory();
 factory.Uri = new Uri(connectionString);
 
